@@ -1,0 +1,100 @@
+﻿@page "/administrationoffice"
+
+@inject ITicketService _ticketService
+@inject IJSRuntime jsRunTime
+
+<div class="col-sm-12">
+    <div class="card mb-4">
+        <div class="card-header">
+            <div style="float:left">
+                <i class="fas fa-plus-square mr-1"></i>
+                <h3>Office Administration</h3>
+            </div>
+        </div>
+
+        <br />
+
+        <div style="float:right">
+            <MudButton @onclick="@(() => BuildTicketReportAsync())" Variant="Variant.Filled" Color="Color.Error">Build report</MudButton>
+        </div>
+
+        <div class="card-body">
+
+            @if (tickets != null)
+            {
+                <MudTable Items="@tickets" Hover="true" SortLabel="Sort By" FixedHeader="true">
+                    <HeaderContent>
+                        <MudTh>Selection</MudTh>
+                        <MudTh>Id</MudTh>
+                        <MudTh>Creation Date</MudTh>
+                        <MudTh>Client Name</MudTh>
+                        <MudTh>Plant Name</MudTh>
+                        <MudTh>Device Code</MudTh>
+                        <MudTh>Reason</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Managed</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudCheckBox @bind-Checked="@(dictSelection[context.TicketId])" Label="Default"></MudCheckBox>
+                        <MudTd DataLabel="Id">@context.TicketId</MudTd>
+                        <MudTd DataLabel="Date">@context.CreatedDate.ToShortDateString()</MudTd>
+                        <MudTd DataLabel="Client Name">@context.ClientId</MudTd>
+                        <MudTd DataLabel="Plant Name">...</MudTd>
+                        <MudTd DataLabel="Code">@context.DeviceId</MudTd>
+                        <MudTd DataLabel="Reason">@context.Reason</MudTd>
+                        <MudTd DataLabel="Status"> @context.TicketStatus</MudTd>
+                        <MudTd DataLabel="Managed"><MudSwitch Color="Color.Primary" @bind-Checked=@(disabled) Label="Managed" /></MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    bool disabled = false;
+
+    public bool Basic_CheckBox { get; set; } = true;
+
+    public Dictionary<int, bool> dictSelection = new Dictionary<int, bool>();
+
+
+    public List<Tickets> tickets = new List<Tickets>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await _ticketService.Load();
+
+        tickets = _ticketService.Tickets;
+        foreach (var tk in tickets)
+        {
+            dictSelection.Add(tk.TicketId, false);
+        }
+        int k = 0;
+        k = 0;
+        //int k = tickets.Count;
+    }
+
+    private async Task BuildTicketReportAsync()
+    {
+        string html = string.Empty;
+
+        //Convert html to pdf
+        foreach (var item in dictSelection)
+        {
+            int a = item.Key;
+            bool b = item.Value;
+            if (b)
+            {
+                html = a.ToString() + "<br/>";
+            }
+        }
+
+        //jsRunTime.InvokeVoidAsync("print");
+
+        //await jsRunTime.InvokeVoidAsync("PrintHtml", html,"title");
+
+        await jsRunTime.InvokeVoidAsync("ShowItvAlert", "message");
+
+    }
+}
