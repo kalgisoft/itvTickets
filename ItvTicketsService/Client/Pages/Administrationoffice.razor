@@ -1,7 +1,7 @@
 ﻿@page "/administrationoffice"
 
 @inject ITicketService _ticketService
-@inject IJSRuntime jsRunTime
+@inject IJSRuntime js
 
 <div class="col-sm-12">
     <div class="card mb-4">
@@ -15,7 +15,10 @@
         <br />
 
         <div style="float:right">
-            <MudButton @onclick="@(() => BuildTicketReportAsync())" Variant="Variant.Filled" Color="Color.Error">Build report</MudButton>
+            @*<MudButton @onclick="@(() => BuildTicketReportAsync())" Variant="Variant.Filled" Color="Color.Error">Build report</MudButton>*@
+            <button class="btn btn-primary" @onclick="@(p => ClickCreateFile("text.pdf"))">Download</button>
+            <button type="button" class="btn btn-success" @onclick="@(p => ClickOpenToIframe("pdfFrame"))">View</button>
+            <button type="button" class="btn btn-warning" @onclick="@(p => ClickOpenNewTab("text.pdf"))">NewTab</button>
         </div>
 
         <div class="card-body">
@@ -48,6 +51,11 @@
                 </MudTable>
             }
         </div>
+        <div class="col-12">
+            <div class="card h-100">
+                <div id="pdfFrame"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -70,31 +78,24 @@
         {
             dictSelection.Add(tk.TicketId, false);
         }
-        int k = 0;
-        k = 0;
-        //int k = tickets.Count;
     }
 
-    private async Task BuildTicketReportAsync()
+
+    private void ClickCreateFile(string filename)
     {
-        string html = string.Empty;
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.Generate(js, filename);
+    }
 
-        //Convert html to pdf
-        foreach (var item in dictSelection)
-        {
-            int a = item.Key;
-            bool b = item.Value;
-            if (b)
-            {
-                html = a.ToString() + "<br/>";
-            }
-        }
+    private void ClickOpenToIframe(string idiFrame)
+    {
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.OpenToIframe(js,idiFrame);
+    }
 
-        //jsRunTime.InvokeVoidAsync("print");
-
-        //await jsRunTime.InvokeVoidAsync("PrintHtml", html,"title");
-
-        await jsRunTime.InvokeVoidAsync("ShowItvAlert", "message");
-
+    private void ClickOpenNewTab(string filename)
+    {
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.OpenNewTab(js, filename);
     }
 }
