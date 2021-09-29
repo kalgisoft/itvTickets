@@ -15,9 +15,7 @@ namespace ItvTicketsService.Server.Data
     public interface ITicketsStore<TTicket> : IDisposable where TTicket : class
     {
         Task<IdentityResult> CreateAsync(TTicket ticket);
-
         Task<IdentityResult> DeleteAsync(TTicket ticket);
-
         Task<IdentityResult> UpdateAsync(TTicket ticket);
         Task<List<TTicket>> FindByPlantIdAsync(int id, bool fullList);
         Task<TTicket> FindTicketByIdAsync(int id);
@@ -25,6 +23,7 @@ namespace ItvTicketsService.Server.Data
         Task<List<TTicket>> FindTicketsByClientId(int id);
         Task<List<TTicket>> FindTicketsByDateInterval(string from, string to);
         Task<List<TicketStatusModel>> GetTicketStatuses();
+        Task<IdentityResult> UpdateTicketFlagAsync(int ticketId, int newFlag);
     }
 
     public class TicketsStore : ITicketsStore<Tickets>
@@ -98,18 +97,31 @@ namespace ItvTicketsService.Server.Data
         {
             using (var connection = new SqlConnection(_connectionString))
             {
+                /*
                 if (fullList)
                 {
-                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETS T 
+                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETSVIEW T 
                     INNER JOIN TicketStatusMaster TS ON TS.TicketStatusId = T.TicketStatusId
                     ORDER BY CreatedDate DESC")).ToList();
                 }
                 else
                 {
-                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETS T 
+                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETSVIEW T 
                     INNER JOIN TicketStatusMaster TS ON TS.TicketStatusId = T.TicketStatusId
                     WHERE T.ClientId = {id} ORDER BY CreatedDate DESC")).ToList();
-                }                
+                }
+                */
+
+                if (fullList)
+                {
+                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETSVIEW
+                    ORDER BY CreatedDate DESC")).ToList();
+                }
+                else
+                {
+                    return (await connection.QueryAsync<Tickets>($@"SELECT * FROM TICKETSVIEW T
+                    WHERE T.ClientId = {id} ORDER BY CreatedDate DESC")).ToList();
+                }
             }
         }
 
@@ -185,6 +197,21 @@ namespace ItvTicketsService.Server.Data
                     WHERE [IsDeleted] = 0")).ToList();
             }
         }
+
+        public async Task<IdentityResult> UpdateTicketFlagAsync(int ticketId, int newFlag)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@TicketId", ticketId, DbType.Int32);
+            parameters.Add("@OfficeFlag", newFlag, DbType.Int32);
+
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                await conn.QueryFirstOrDefaultAsync("spTickets_UpdateOfficeFlag", parameters, commandType: CommandType.StoredProcedure);
+            }
+
+            return IdentityResult.Success;
+        }
+
 
         public void Dispose()
         {

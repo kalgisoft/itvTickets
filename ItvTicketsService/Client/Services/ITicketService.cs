@@ -31,5 +31,6 @@ namespace ItvTicketsService.Client.Services
 
         Task AddTicket();
         Task<HttpResponseMessage> DeleteTicket(Tickets ticket);
+        Task<HttpResponseMessage> UpdateTicketFlag(int tkid, int flag);
     }
 }

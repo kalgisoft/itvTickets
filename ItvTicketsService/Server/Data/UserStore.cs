@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using ItvTicketsService.Server.Models;
 using ItvTicketsService.Shared.Models;
+using System.Data;
 
 namespace ItvTicketsService.Server.Data
 {
@@ -30,12 +31,20 @@ namespace ItvTicketsService.Server.Data
             {
                 await connection.OpenAsync(cancellationToken);
                 user.Id = await connection.QuerySingleAsync<int>($@"INSERT INTO [ApplicationUser] ([UserName], [NormalizedUserName], [Email],
-                    [NormalizedEmail], [EmailConfirmed], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [PlantId])
+                    [NormalizedEmail], [EmailConfirmed], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled])
                     VALUES (@{nameof(ApplicationUser.UserName)}, @{nameof(ApplicationUser.NormalizedUserName)}, @{nameof(ApplicationUser.Email)},
                     @{nameof(ApplicationUser.NormalizedEmail)}, @{nameof(ApplicationUser.EmailConfirmed)}, @{nameof(ApplicationUser.PasswordHash)},
-                    @{nameof(ApplicationUser.PhoneNumber)}, @{nameof(ApplicationUser.PhoneNumberConfirmed)}, @{nameof(ApplicationUser.TwoFactorEnabled)}, 
-                    @{nameof(ApplicationUser.PlantId)});
+                    @{nameof(ApplicationUser.PhoneNumber)}, @{nameof(ApplicationUser.PhoneNumberConfirmed)}, @{nameof(ApplicationUser.TwoFactorEnabled)});
                     SELECT CAST(SCOPE_IDENTITY() as int)", user);
+
+                
+                var parameters = new DynamicParameters();
+                parameters.Add("client", user.Id, DbType.Int32);
+                parameters.Add("plant", user.PlantId, DbType.Int32);
+
+                // Stored procedure method
+                await connection.ExecuteAsync("spPlantsToClient_Upsert", parameters, commandType: CommandType.StoredProcedure);
+                
 
                 //add all new users to Client role
                 await AddToRoleAsync(user,RoleType.Client.ToString());
@@ -112,12 +121,12 @@ namespace ItvTicketsService.Server.Data
         {
             return Task.FromResult(user.UserName);
         }
-
+/*
         public Task<int> GetPlantIdAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             return Task.FromResult(user.PlantId);
         }
-
+*/
         public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
         {
             user.NormalizedUserName = normalizedName;
@@ -146,8 +155,7 @@ namespace ItvTicketsService.Server.Data
                     [PasswordHash] = @{nameof(ApplicationUser.PasswordHash)},
                     [PhoneNumber] = @{nameof(ApplicationUser.PhoneNumber)},
                     [PhoneNumberConfirmed] = @{nameof(ApplicationUser.PhoneNumberConfirmed)},
-                    [TwoFactorEnabled] = @{nameof(ApplicationUser.TwoFactorEnabled)},
-                    [PlantId] = @{nameof(ApplicationUser.PlantId)}
+                    [TwoFactorEnabled] = @{nameof(ApplicationUser.TwoFactorEnabled)}
                     WHERE [Id] = @{nameof(ApplicationUser.Id)}", user);
             }
 

@@ -25,6 +25,11 @@
 
         <br />
 
+        @if (showAlert)
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Filled" NoIcon="true" Class="my-2">Select a Plant</MudAlert>
+        }
+
         <div class='row'>
             <div class='col-2'>
                 <label for='Code'>Code:</label>
@@ -111,6 +116,8 @@
 </EditForm>
 
 @code {
+    bool showAlert = false;
+
     List<Plant> plants = new List<Plant>();
     List<Contractor> contractors = new List<Contractor>();
 
@@ -147,21 +154,33 @@
     // Executes OnValidSubmit of EditForm above.
     protected async Task Save()
     {
-        if (device.Id == 0)
-        {
-            // Insert if Id is zero.
+        bool proceed = true;
 
-            //valore di defalt, ci deve sempre essere
-            device.IdContractor = 1;
-
-            await DeviceService.DeviceInsert(device);
-        }
-        else
+        if (device.PlantId <= 0)
         {
-            // Update if Id not 0
-            await DeviceService.DeviceUpdate(device);
+            proceed = false;
+            showAlert = true;
         }
-        NavigationManager.NavigateTo("/devicelist");
+
+        if (proceed)
+        {
+            if (device.Id == 0)
+            {
+                // Insert if Id is zero.
+
+                //valore di default 1, ci deve sempre essere
+                device.IdContractor = 1;
+
+                await DeviceService.DeviceInsert(device);
+            }
+            else
+            {
+                // Update if Id not 0
+                await DeviceService.DeviceUpdate(device);
+            }
+
+            NavigationManager.NavigateTo("/devicelist");
+        }
     }
 
     //Executes if user clicks the Cancel button.
@@ -180,5 +199,4 @@
     {
         NavigationManager.NavigateTo("/deviceimagesaddedit/" + device.Code);
     }
-
 }

@@ -122,7 +122,7 @@ namespace ItvTicketsService.Server.Controllers
             var applicationUser = new ApplicationUser();
             applicationUser.Id = resetPasswordInfo.Id;
             applicationUser.UserName = resetPasswordInfo.UserName;
-            applicationUser.PlantId = resetPasswordInfo.Plants != null && resetPasswordInfo.Plants.Any() ? resetPasswordInfo.Plants.First() : 1;
+//            applicationUser.PlantId = resetPasswordInfo.Plants != null && resetPasswordInfo.Plants.Any() ? resetPasswordInfo.Plants.First() : 1;
             string code = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
             var result = await _userManager.ResetPasswordAsync(applicationUser, code, resetPasswordInfo.Password);
             if (result.Succeeded == false)

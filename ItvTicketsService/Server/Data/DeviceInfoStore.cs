@@ -110,8 +110,8 @@ namespace ItvTicketsService.Server.Data
 
             using (var conn = new SqlConnection(_connectionString))
             {
-                devinfo = await conn.QuerySingleOrDefaultAsync<DeviceInfo>($@"SELECT * FROM [DeviceInfo]
-                    WHERE [Code] = @{nameof(code)}", new { code });
+                string sql = $"SELECT * FROM [DeviceInfo] WHERE [Code] = '{code}'";
+                devinfo = await conn.QuerySingleOrDefaultAsync<DeviceInfo>(sql);
             }
 
             return devinfo;

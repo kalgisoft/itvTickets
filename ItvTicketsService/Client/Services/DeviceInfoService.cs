@@ -33,7 +33,9 @@ namespace ItvTicketsService.Client.Services
 
         public async Task<DeviceInfo> Device_GetInfoByCode(string code)
         {
-            return await _httpClient.GetFromJsonAsync<DeviceInfo>("api/DeviceInfo/Device_GetInfoByCode/" + code);
+            var ret = await _httpClient.GetFromJsonAsync<DeviceInfo>("api/DeviceInfo/Device_GetInfoByCode/" + code);
+      
+            return ret;
         }
     }
 }

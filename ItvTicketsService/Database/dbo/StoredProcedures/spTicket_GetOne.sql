@@ -4,5 +4,5 @@
 AS 
 BEGIN
 -- SQL Select for one table row
-SELECT TOP(1) TicketId, CreatedDate, Reason, DeviceId, TicketStatusId, ClientId, TeamId, OpenDate, TeamMemo, CloseDate, CloserId FROM Tickets WHERE TicketId = @Id
+SELECT TOP(1) TicketId, CreatedDate, Reason, DeviceId, Code, NumLinea, TicketStatusId, TicketStatus, ClientId, ClientName, TeamId, TeamName, OpenDate, TeamMemo, CloseDate, CloserId, CloserName, OfficeFlag FROM TICKETSVIEW WHERE TicketId = @Id
 END

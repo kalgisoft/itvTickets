@@ -137,7 +137,7 @@ namespace ItvTicketsService.Server.Controllers
                     Role = claimsIdentity.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => (RoleType)Enum.Parse(typeof(RoleType), x.Value)).ToList(),
                     Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value),
                     //PlantId = User.IsInRole(RoleType.Admin.ToString()) == false ? user.PlantId : 0
-                    PlantId = user.PlantId,
+                    //PlantId = user.PlantId,
                     UserId = user.Id
                 };
             }

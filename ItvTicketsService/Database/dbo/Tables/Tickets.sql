@@ -11,6 +11,7 @@ CREATE TABLE [dbo].[Tickets](
     [TeamMemo] TEXT NULL, 
     [CloseDate] DATETIME NULL, 
     [CloserId] INT NULL, 
+    [OfficeFlag] INT NOT NULL DEFAULT 0, 
     PRIMARY KEY CLUSTERED 
 (
 	[TicketId] ASC

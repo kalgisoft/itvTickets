@@ -62,17 +62,14 @@
                                         <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.TicketId)" InitialDirection="SortDirection.Descending">Id</MudTableSortLabel></MudTh>
                                         <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.CreatedDate)">Date</MudTableSortLabel></MudTh>
                                         <MudTh>Reason</MudTh>
-                                        <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictDevices[x.DeviceId])">Dev Code</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.Code)">Dev Code</MudTableSortLabel></MudTh>
                                         <MudTh>Status</MudTh>
                                     </HeaderContent>
                                     <RowTemplate>
                                         <MudTd DataLabel="Id">@context.TicketId</MudTd>
                                         <MudTd DataLabel="Date">@context.CreatedDate.ToShortDateString()</MudTd>
                                         <MudTd DataLabel="Reason">@context.Reason</MudTd>
-                                        <MudTd DataLabel="Code">
-                                            @if (dictDevices.ContainsKey(context.DeviceId))
-                                                @dictDevices[context.DeviceId]
-                                        </MudTd>                                        
+                                        <MudTd DataLabel="Code">@context.Code</MudTd>                                        
                                         <MudTd DataLabel="Status">
                                             @if (context.TicketStatusId == _ticketService.TicketStatuses.Max(x => x.TicketStatusId) - 2)
                                             {
@@ -100,6 +97,7 @@
                                         <MudTablePager PageSizeOptions="new int[]{50, 100}" />
                                     </PagerContent>
                                 </MudTable>
+
 
                                 <!--
     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -208,9 +206,9 @@
                                     <MudTh>Edit</MudTh>
                                     <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.TicketId)" InitialDirection="SortDirection.Descending">Id</MudTableSortLabel></MudTh>
                                     <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.CreatedDate)">Date</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictClients[x.ClientId])">Client Name</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictDeviceToPlantName[x.DeviceId])">Plant Name</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictDevices[x.DeviceId])">Dev Code</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.ClientName)">Client Name</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.PlantName)">Plant Name</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.Code)">Dev Code</MudTableSortLabel></MudTh>
                                     <MudTh>Reason</MudTh>
                                     <MudTh>Status</MudTh>
                                 </HeaderContent>
@@ -222,26 +220,16 @@
                                     </MudTd>
                                     <MudTd DataLabel="Id">@context.TicketId</MudTd>
                                     <MudTd DataLabel="Date">@context.CreatedDate.ToShortDateString()</MudTd>
-                                    <MudTd DataLabel="Client Name">
-                                        @if (dictClients.ContainsKey(context.ClientId))
-                                            @dictClients[context.ClientId]
-                                    </MudTd>
-                                    <MudTd DataLabel="Plant Name">
-                                        @if (dictDeviceToPlantName.ContainsKey(context.DeviceId))
-                                            @dictDeviceToPlantName[context.DeviceId]
-                                    </MudTd>
+                                    <MudTd DataLabel="Client Name">@context.ClientName</MudTd>
+                                    <MudTd DataLabel="Plant Name">@context.PlantName</MudTd>
                                     <MudTd DataLabel="Code">
-                                        @if (dictDevices.ContainsKey(context.DeviceId))
-                                        {
-                                        <a href="/deviceinforeport/@dictDevices[context.DeviceId]" target="_blank">
+                                        <a href="/deviceinforeport/@context.Code" target="_blank">
                                             <p style="color:blue">
                                                 <u>
-                                                    @dictDevices[context.DeviceId] (@dictDeviceLine[context.DeviceId])
+                                                    @context.Code (@context.NumLinea)
                                                 </u>
                                             </p>
-                                        </a>
-                                        //@dictDevices[context.DeviceId]
-                                        }
+                                        </a>                                        
                                     </MudTd>
                                     <MudTd DataLabel="Reason">@context.Reason</MudTd>
                                     <MudTd DataLabel="Status">
@@ -278,89 +266,6 @@
                                     <MudTablePager PageSizeOptions="new int[]{50, 100}" />
                                 </PagerContent>
                             </MudTable>
-
-
-                            <!--
-
-
-                                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Edit</th>
-                                                        <th>Id</th>
-                                                        <th>Date</th>
-                                                        <th>Client Name</th>
-                                                        <th>Plant Name</th>
-                                                        <th>Dev Code</th>
-                                                        <th>Reason</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var ticket in _ticketService.Tickets)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                <a href="ticketaddedit/@ticket.TicketId">
-                                                                    <span class="oi oi-pencil" style="color:blue;"></span>
-                                                                    <img src="../images/iEdit.png" />
-                                                                </a>
-                                                            </td>
-                                                            <td>@ticket.TicketId</td>
-                                                            <td>@ticket.CreatedDate.ToShortDateString()</td>
-                                                            <td>
-                                                                @if (dictClients.ContainsKey(ticket.ClientId))
-                                                                    @dictClients[ticket.ClientId]
-                                                            </td>
-                                                            <td>
-                                                                @if (dictDeviceToPlantName.ContainsKey(ticket.DeviceId))
-                                                                {
-                                                                    @dictDeviceToPlantName[ticket.DeviceId]
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                @if (dictDevices.ContainsKey(ticket.DeviceId))
-                                                                    @dictDevices[ticket.DeviceId]
-                                                            </td>
-                                                            <td>@ticket.Reason</td>
-                                                            <td>
-                                                                @if (ticket.TicketStatusId >= _ticketService.TicketStatuses.Max(x => x.TicketStatusId) - 1)
-                                                                {
-                                                                    @ticket.TicketStatus
-                                                                }
-                                                                else
-                                                                {
-                                                                    btnStatus = "btn btn-primary";
-
-                                                                    @if (ticket.TicketStatusId == (int)TicketStatusMaster.InProgress)
-                                                                    {
-                                                                        btnStatus = "btn btn-success";
-                                                                    }
-
-                                                                    @if (ticket.TicketStatusId == (int)TicketStatusMaster.Complete)
-                                                                    {
-                                                                        btnStatus = "btn btn-warning";
-                                                                    }
-
-                                                                    @if (ticket.TicketStatusId == (int)TicketStatusMaster.Approve)
-                                                                    {
-                                                                        btnStatus = "btn btn-danger";
-                                                                    }
-
-                                                                    <button class=@btnStatus @onclick="@(() => UpdateTicket(ticket,true))">
-                                                                        @ticket.TicketStatus
-                                                                    </button>
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-
-
-                    -->
-
-
 
                         </div>
                     </div>
@@ -520,9 +425,9 @@
                                     <MudTh>Edit</MudTh>
                                     <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.TicketId)" InitialDirection="SortDirection.Descending">Id</MudTableSortLabel></MudTh>
                                     <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.CreatedDate)">Date</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictClients[x.ClientId])">Client Name</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictDeviceToPlantName[x.DeviceId])">Plant Name</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>dictDevices[x.DeviceId])">Dev Code</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.ClientName)">Client Name</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.PlantName)">Plant Name</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<Tickets, object>(x=>x.Code)">Dev Code</MudTableSortLabel></MudTh>
                                     <MudTh>Reason</MudTh>
                                     <MudTh>Status</MudTh>
                                     <MudTh>Delete</MudTh>
@@ -535,18 +440,9 @@
                                     </MudTd>
                                     <MudTd DataLabel="Id">@context.TicketId</MudTd>
                                     <MudTd DataLabel="Date">@context.CreatedDate.ToShortDateString()</MudTd>
-                                    <MudTd DataLabel="Client Name">
-                                        @if (dictClients.ContainsKey(context.ClientId))
-                                            @dictClients[context.ClientId]
-                                    </MudTd>
-                                    <MudTd DataLabel="Plant Name">
-                                        @if (dictDeviceToPlantName.ContainsKey(context.DeviceId))
-                                            @dictDeviceToPlantName[context.DeviceId]
-                                    </MudTd>
-                                    <MudTd DataLabel="Code">
-                                        @if (dictDevices.ContainsKey(context.DeviceId))
-                                            @dictDevices[context.DeviceId]
-                                    </MudTd>
+                                    <MudTd DataLabel="Client Name">@context.ClientName</MudTd>
+                                    <MudTd DataLabel="Plant Name">@context.PlantName</MudTd>
+                                    <MudTd DataLabel="Code">@context.Code</MudTd>
                                     <MudTd DataLabel="Reason">@context.Reason</MudTd>
                                     <MudTd DataLabel="Status">
                                         @if (context.TicketStatusId > _ticketService.TicketStatuses.Max(x => x.TicketStatusId))
@@ -693,10 +589,10 @@
 
 
 @code {
-    /// <summary>
-    /// name of company
-    /// </summary>
-    //private int PlantId = 0;
+        /// <summary>
+        /// name of company
+        /// </summary>
+        //private int PlantId = 0;
     private string plantName;
 
     private string btnStatus = "btn btn-primary btn-primary-extended";
@@ -719,11 +615,11 @@
     public List<Company> userCompany = new List<Company>();
 
 
-    public Dictionary<int, string> dictDevices = new Dictionary<int, string>();
-    public Dictionary<int, string> dictClients = new Dictionary<int, string>();
+    //public Dictionary<int, string> dictDevices = new Dictionary<int, string>();
+    //public Dictionary<int, string> dictClients = new Dictionary<int, string>();
     public Dictionary<int, string> dictPlants = new Dictionary<int, string>();
-    public Dictionary<int, string> dictDeviceToPlantName = new Dictionary<int, string>();
-    public Dictionary<int, int> dictDeviceLine = new Dictionary<int, int>();
+    //public Dictionary<int, string> dictDeviceToPlantName = new Dictionary<int, string>();
+    //public Dictionary<int, int> dictDeviceLine = new Dictionary<int, int>();
 
     public Dictionary<int, string> dictCompanyName = new Dictionary<int, string>();
     public Dictionary<int, int> dictCompanyTickets = new Dictionary<int, int>();
@@ -773,7 +669,7 @@
         {
             //lista utenti ruolo client
             users = await _userinfoService.GetUserList(3);
-            dictClients = users.Distinct().ToDictionary(x => x.Id, x => x.UserName);
+            //dictClients = users.Distinct().ToDictionary(x => x.Id, x => x.UserName);
 
             plants = await _plantService.GetPlantList();
 
@@ -781,8 +677,8 @@
         }
 
         dictPlants = plants.Distinct().ToDictionary(x => x.Id, x => x.Name);
-        dictDevices = devices.Distinct().ToDictionary(x => x.Id, x => x.Code);
-        dictDeviceLine = devices.Distinct().ToDictionary(x => x.Id, x => x.NumLinea);
+        //dictDevices = devices.Distinct().ToDictionary(x => x.Id, x => x.Code);
+        //dictDeviceLine = devices.Distinct().ToDictionary(x => x.Id, x => x.NumLinea);
 
         foreach (var cmp in userCompany)
         {
@@ -792,7 +688,7 @@
         //dictCompanyName = userCompany.Distinct().ToDictionary(x => x.Id, x => x.Name);
         //dictCompanyTickets = userCompany.Distinct().ToDictionary(x => x.Id, x => x.TicketAmount);
 
-
+        /*
         foreach (var dv in devices)
         {
             if (true)/// !dictDeviceToPlantName.ContainsKey(dv.Id))
@@ -803,6 +699,7 @@
                 }
             }
         }
+        */
 
         //plantName
         //Plant pl = await _plantService.Plant_GetOne(PlantId);
@@ -1032,9 +929,15 @@
         string deviceName = "null";
         string plantName = "null";
 
+        /*
         if (dictClients.ContainsKey(element.ClientId)) clientName = dictClients[element.ClientId];
         if (dictDevices.ContainsKey(element.DeviceId)) deviceName = dictDevices[element.DeviceId];
         if (dictDeviceToPlantName.ContainsKey(element.DeviceId)) plantName = dictDeviceToPlantName[element.DeviceId];
+        */
+
+        clientName = element.ClientName;
+        deviceName = element.Code;
+        plantName = element.PlantName;
 
         if (string.IsNullOrWhiteSpace(searchString))
             return true;

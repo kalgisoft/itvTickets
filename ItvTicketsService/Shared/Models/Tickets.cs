@@ -31,18 +31,39 @@ namespace ItvTicketsService.Shared.Models
         [Required]
         public int DeviceId { get; set; }
 
+        //from view, device code
+        public string Code { get; set; }
+
+        //from view
+        public string PlantName { get; set; }
+
+        //from view
+        public int NumLinea { get; set; }
+
         //id dello user client che ha richiesto il ticket, determina anche il PlantID
         [Required]
         public int ClientId { get; set; }
 
+        //from view
+        public string ClientName { get; set; }
+
         //id dello user team che gestisce il ticket
         public int TeamId { get; set; }
+
+        //from view
+        public string TeamName { get; set; }
 
         //commenti del team relativi al lavoro svolto
         public string TeamMemo { get; set; }
 
         //id dello user client o team che chiude il ticket
         public int CloserId { get; set; }
+
+        //from view
+        public string CloserName { get; set; }
+
+        //ticket status for office management purposes
+        public int OfficeFlag { get; set; }
     }
 
     public class TicketStatusModel

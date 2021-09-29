@@ -151,5 +151,12 @@ namespace ItvTicketsService.Server.Controllers
         {
             return await _ticketsStore.DeleteAsync(ticket);
         }
+
+        [HttpPost]
+        public async Task<IdentityResult> TicketsUpdateFlag(List<int> par)
+        {
+            return await _ticketsStore.UpdateTicketFlagAsync(par[0], par[1]);
+        }
+
     }
 }

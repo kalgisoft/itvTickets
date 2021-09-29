@@ -59,6 +59,7 @@
     <Folder Include="PublishLocations" />
     <Folder Include="dbo\StoredProcedures" />
     <Folder Include="dbo\Seeding" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\ApplicationRole.sql" />
@@ -103,6 +104,8 @@
     <Build Include="dbo\StoredProcedures\spLog_GetOne.sql" />
     <Build Include="dbo\StoredProcedures\spLog_List.sql" />
     <Build Include="dbo\StoredProcedures\spLog_Insert.sql" />
+    <Build Include="dbo\StoredProcedures\spTickets_UpdateOfficeFlag.sql" />
+    <Build Include="dbo\Views\TicketsView.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\ApplicationUser.sql" />

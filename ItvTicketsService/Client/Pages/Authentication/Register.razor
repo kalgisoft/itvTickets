@@ -3,6 +3,8 @@
 @inject NavigationManager navigationManager
 @inject CustomStateProvider authStateProvider
 @inject IPlantService PlantService
+@inject IUserInfoService _userInfo
+
 
 <AuthorizeView Roles="Admin">
     <Authorized Context="Register">
@@ -35,20 +37,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            @if (plants != null)
-                            {
-                                <select class="form-control selectpicker" @bind="registerRequest.PlantId">
-                                    <option>--select plant--</option>
-                                    @foreach (var pl in plants)
-                                    {
-                                        <option value="@pl.Id">@pl.Name</option>
-                                    }
-                                </select>
 
-                                <ValidationMessage For="@(() => registerRequest.PlantId)" />
-                            }
-                        </div>
+                        
+    <div class="form-group">
+        @if (plants != null)
+        {
+            <select class="form-control selectpicker" @bind="registerRequest.PlantId">
+                <option>--select plant--</option>
+                @foreach (var pl in plants)
+                {
+                    <option value="@pl.Id">@pl.Name</option>
+                }
+            </select>
+
+            <ValidationMessage For="@(() => registerRequest.PlantId)" />
+        }
+    </div>
+ 
 
                         <div class="form-group mt-4 mb-0">
                             <button class="btn btn-primary btn-block" type="submit">Create account</button>
