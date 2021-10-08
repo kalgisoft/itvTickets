@@ -1,8 +1,7 @@
 ﻿@page "/administrationoffice"
 
 @inject ITicketService _ticketService
-@inject IDialogService _dialogService
-@inject IJSRuntime jsRunTime
+@inject IJSRuntime js
 
 <div class="col-sm-12">
     <div class="card mb-4">
@@ -16,7 +15,10 @@
         <br />
 
         <div style="float:right">
-            <MudButton @onclick="@(() => BuildTicketReportAsync())" Variant="Variant.Filled" Color="Color.Error">Build report</MudButton>
+            @*<MudButton @onclick="@(() => BuildTicketReportAsync())" Variant="Variant.Filled" Color="Color.Error">Build report</MudButton>*@
+            <button class="btn btn-primary" @onclick="@(p => ClickCreateFile("text.pdf"))">Download</button>
+            <button type="button" class="btn btn-success" @onclick="@(p => ClickOpenToIframe("pdfFrame"))">View</button>
+            <button type="button" class="btn btn-warning" @onclick="@(p => ClickOpenNewTab("text.pdf"))">NewTab</button>
         </div>
 
         <div class="card-body">
@@ -36,18 +38,23 @@
                         <MudTh>Managed</MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudCheckBox @bind-Checked="@(dictSelection[context.TicketId])" Label=""></MudCheckBox>
+                        <MudCheckBox @bind-Checked="@(dictSelection[context.TicketId])" Label="Default"></MudCheckBox>
                         <MudTd DataLabel="Id">@context.TicketId</MudTd>
                         <MudTd DataLabel="Date">@context.CreatedDate.ToShortDateString()</MudTd>
-                        <MudTd DataLabel="Client Name">@context.ClientName</MudTd>
-                        <MudTd DataLabel="Plant Name">@context.PlantName</MudTd>
-                        <MudTd DataLabel="Code">@context.Code</MudTd>
+                        <MudTd DataLabel="Client Name">@context.ClientId</MudTd>
+                        <MudTd DataLabel="Plant Name">...</MudTd>
+                        <MudTd DataLabel="Code">@context.DeviceId</MudTd>
                         <MudTd DataLabel="Reason">@context.Reason</MudTd>
                         <MudTd DataLabel="Status"> @context.TicketStatus</MudTd>
-                        <MudTd DataLabel="Managed"><MudSwitch Color="Color.Primary" @bind-Checked=@context.OfficeFlag @onclick="@(() => ClickFlag(context.TicketId, context.OfficeFlag))" Label="Managed" /></MudTd>
+                        <MudTd DataLabel="Managed"><MudSwitch Color="Color.Primary" @bind-Checked=@(disabled) Label="Managed" /></MudTd>
                     </RowTemplate>
                 </MudTable>
             }
+        </div>
+        <div class="col-12">
+            <div class="card h-100">
+                <div id="pdfFrame"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -71,48 +78,24 @@
         {
             dictSelection.Add(tk.TicketId, false);
         }
-        int k = 0;
-        k = 0;
-        //int k = tickets.Count;
     }
 
-    private async Task BuildTicketReportAsync()
+
+    private void ClickCreateFile(string filename)
     {
-        string html = string.Empty;
-
-        //Convert html to pdf
-        int numItems = 0;
-        foreach (var item in dictSelection)
-        {
-            int a = item.Key;
-            bool b = item.Value;
-            if (b)
-            {
-                html = a.ToString() + "<br/>";
-                numItems++;
-            }
-        }
-
-        //jsRunTime.InvokeVoidAsync("print");
-
-        //await jsRunTime.InvokeVoidAsync("PrintHtml", html,"title");
-
-        //await jsRunTime.InvokeVoidAsync("ShowItvAlert", "message");
-
-        if (numItems==0)
-        {
-            _dialogService.Show<ItvModalDialog>("!!!No selected items");
-        }
-        else
-        {
-            _dialogService.Show<ItvModalDialog>("Not implemented");
-        }
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.Generate(js, filename);
     }
 
-    private async Task<HttpResponseMessage> ClickFlag(int tkid, int currentflag)
+    private void ClickOpenToIframe(string idiFrame)
     {
-        int flag = 0;
-        if (currentflag == 0) flag = 1;
-        return await _ticketService.UpdateTicketFlag(tkid, flag);
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.OpenToIframe(js,idiFrame);
+    }
+
+    private void ClickOpenNewTab(string filename)
+    {
+        var pdf = new Blazor_PDF.PDF.Report();
+        pdf.OpenNewTab(js, filename);
     }
 }
